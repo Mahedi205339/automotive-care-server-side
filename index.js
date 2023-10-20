@@ -28,7 +28,7 @@ async function run() {
         await client.connect();
 
 
-        // data collection 
+        // data collection  
         const carsCollection = client.db('carsDB').collection('cars');
 
         //data created
@@ -54,7 +54,7 @@ async function run() {
             res.send(result)
 
         })
-        //update data 
+
         app.get('/cars/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
@@ -62,6 +62,28 @@ async function run() {
             res.send(result)
 
         })
+        //update data
+        app.put('/cars/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true };
+            const updatedCar = req.body;
+            const cars = {
+                $set: {
+                    name: updatedCar.name,
+                    brand: updatedCar.brand,
+                    type: updatedCar.type,
+                    price: updatedCar.price,
+                    details: updatedCar.details,
+                    photo: updatedCar.photo
+
+                }
+            }
+            const result = await carsCollection.updateOne(filter,cars ,options)
+            res.send(result);
+        })
+
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
