@@ -24,12 +24,10 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
 
-        // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
-
 
         // data collection  
         const carsCollection = client.db('carsDB').collection('cars');
+        const usersCollection = client.db('carsDB').collection('users');
 
         //data created
         app.post('/cars', async (req, res) => {
@@ -40,8 +38,8 @@ async function run() {
         })
         //data read 
         app.get('/cars', async (req, res) => {
-            const cursor = carsCollection.find();
-            const result = await cursor.toArray();
+
+            const result = await carsCollection.find().toArray()
             res.send(result);
         })
 
@@ -55,6 +53,8 @@ async function run() {
 
         })
 
+        // get all cars 
+
         app.get('/cars/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
@@ -62,6 +62,55 @@ async function run() {
             res.send(result)
 
         })
+
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            //inserted email if user does not exists ;
+            const query = { email: user.email };
+            const existsUser = await usersCollection.findOne(query);
+            if (existsUser) {
+                return res.send({ message: "user already exist", insertedId: null })
+            }
+            const result = await usersCollection.insertOne(user);
+            res.send(result)
+        })
+
+        // get cars basis on brands
+
+        //http://localhost:5000/cars?brand=categoryValue
+        //http://localhost:5000/cars?sortFeild=price&priceOrder=asc
+
+
+
+        //bookings 
+        app.post('/bookings', async (req, res) => {
+            try {
+                const bookings = req.body;
+                console.log(bookings);
+                const result = await bookingsCollection.insertOne(bookings);
+                res.send(result)
+            }
+            catch {
+                error => console.log(error)
+            }
+
+        })
+        app.post('/feedback', async (req, res) => {
+            try {
+                const feedback = req.body;
+                console.log(feedback);
+                const result = await feedbackCollection.insertOne(feedback);
+                res.send(result)
+            }
+            catch {
+                error => console.log(error)
+            }
+
+        })
+
+
+
+
         //update data
         app.put('/cars/:id', async (req, res) => {
             const id = req.params.id;
@@ -79,14 +128,14 @@ async function run() {
 
                 }
             }
-            const result = await carsCollection.updateOne(filter,cars ,options)
+            const result = await carsCollection.updateOne(filter, cars, options)
             res.send(result);
         })
 
 
 
         // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
+        // await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
