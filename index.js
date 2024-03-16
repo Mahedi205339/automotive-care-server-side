@@ -39,8 +39,16 @@ async function run() {
         })
         //data read 
         app.get('/cars', async (req, res) => {
+            const filter = req.query;
+            console.log(filter);
+            const query = {}
+            const options = {
+                sort: {
+                    price: filter?.sort === 'asc' ? 1 : -1
+                }
+            }
 
-            const result = await carsCollection.find().toArray()
+            const result = await carsCollection.find(query ,options).toArray()
             res.send(result);
         })
 
