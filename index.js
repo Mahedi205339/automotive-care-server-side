@@ -28,6 +28,7 @@ async function run() {
         // data collection  
         const carsCollection = client.db('carsDB').collection('cars');
         const usersCollection = client.db('carsDB').collection('users');
+        const bookingsCollection = client.db('carsDB').collection('bookings');
 
         //data created
         app.post('/cars', async (req, res) => {
@@ -62,7 +63,7 @@ async function run() {
             res.send(result)
 
         })
-
+        //users register here
         app.post('/users', async (req, res) => {
             const user = req.body;
             //inserted email if user does not exists ;
@@ -86,6 +87,13 @@ async function run() {
         app.post('/bookings', async (req, res) => {
             try {
                 const bookings = req.body;
+                const query = { email: bookings.email, title: bookings.title };
+                console.log(query);
+                const existsBookings = await bookingsCollection.findOne(query);
+                if (existsBookings) {
+                    return res.send({ message: "booking already exist", insertedId: null })
+                }
+                console.log(bookings);
                 console.log(bookings);
                 const result = await bookingsCollection.insertOne(bookings);
                 res.send(result)
