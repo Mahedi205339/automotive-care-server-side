@@ -42,13 +42,20 @@ async function run() {
             const filter = req.query;
             console.log(filter);
             const query = {}
+            const page = parseInt(req?.query?.page);
+            const size = parseInt(req?.query?.size)
+
             const options = {
                 sort: {
                     price: filter?.sort === 'asc' ? 1 : -1
                 }
             }
 
-            const result = await carsCollection.find(query ,options).toArray()
+            const result = await carsCollection
+                .find(query, options)
+                .skip( page )
+                .limit(size)
+                .toArray()
             res.send(result);
         })
 
