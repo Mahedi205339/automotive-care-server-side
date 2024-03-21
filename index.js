@@ -53,9 +53,13 @@ async function run() {
 
             const result = await carsCollection
                 .find(query, options)
-                .skip( page )
+                .skip(page * size)
                 .limit(size)
                 .toArray()
+            res.send(result);
+        })
+        app.get('/cars-count', async (req, res) => {
+            const result = await carsCollection.find().toArray()
             res.send(result);
         })
 
@@ -102,7 +106,7 @@ async function run() {
         app.post('/bookings', async (req, res) => {
             try {
                 const bookings = req.body;
-                const query = { email: bookings.email, title: bookings.title };
+                const query = { email: bookings.email };
                 console.log(query);
                 const existsBookings = await bookingsCollection.findOne(query);
                 if (existsBookings) {
@@ -118,6 +122,20 @@ async function run() {
             }
 
         })
+        //get all bookings 
+        app.get('/bookings', async (req, res) => {
+            const result = await bookingsCollection.find().toArray()
+            res.send(result)
+        })
+
+        // get bookings by email 
+        app.get('/bookings/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email }
+            const result = await bookingsCollection.find(query).toArray()
+            res.send(result)
+        })
+
         app.post('/feedback', async (req, res) => {
             try {
                 const feedback = req.body;
