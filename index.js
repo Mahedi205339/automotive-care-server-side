@@ -82,6 +82,16 @@ async function run() {
             res.send(result)
 
         })
+
+        //add cars 
+        app.post("/add-cars" , async (req, res)=>{
+            const carData = req.body ;
+            // console.log(data);
+            const result = await carsCollection.insertOne(carData)
+            res.send(result)
+
+        })  
+
         //users register here
         app.post('/users', async (req, res) => {
             const user = req.body;
