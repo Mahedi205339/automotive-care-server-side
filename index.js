@@ -84,13 +84,13 @@ async function run() {
         })
 
         //add cars 
-        app.post("/add-cars" , async (req, res)=>{
-            const carData = req.body ;
+        app.post("/add-cars", async (req, res) => {
+            const carData = req.body;
             // console.log(data);
             const result = await carsCollection.insertOne(carData)
             res.send(result)
 
-        })  
+        })
 
         //users register here
         app.post('/users', async (req, res) => {
@@ -163,19 +163,24 @@ async function run() {
 
 
         //update data
-        app.put('/cars/:id', async (req, res) => {
+        app.patch('/update-car/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) }
             const options = { upsert: true };
             const updatedCar = req.body;
             const cars = {
                 $set: {
-                    name: updatedCar.name,
+                    title: updatedCar.title,
+                    description: updatedCar.description,
                     brand: updatedCar.brand,
-                    type: updatedCar.type,
                     price: updatedCar.price,
-                    details: updatedCar.details,
-                    photo: updatedCar.photo
+                    image: updatedCar.image,
+                    image1: updatedCar.image1,
+                    image2: updatedCar.image2,
+                    image3: updatedCar.image3,
+                    engine_type: updatedCar.engine_type,
+                    mileage: updatedCar.mileage,
+                    category: updatedCar.category,
 
                 }
             }
