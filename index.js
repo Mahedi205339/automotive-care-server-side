@@ -145,6 +145,18 @@ async function run() {
             const result = await bookingsCollection.find(query).toArray()
             res.send(result)
         })
+        //cancel or delete a booking 
+        app.delete('/booking/:id', async (req, res) => {
+            try {
+                const id = req.params.id;
+                const query = { _id: new ObjectId(id) }
+                const result = await bookingsCollection.deleteOne(query);
+                res.send(result);
+
+            } catch (error) {
+                console.log(error);
+            }
+        })
 
         app.post('/feedback', async (req, res) => {
             try {
