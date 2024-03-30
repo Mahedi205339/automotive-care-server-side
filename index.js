@@ -5,10 +5,11 @@ require('dotenv').config();
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const { ObjectId } = require("mongodb");
+// const cookieParser = require('cookie-parser')
 // middleware
 app.use(cors());
 app.use(express.json());
-
+const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.0r9jhzc.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -29,6 +30,7 @@ async function run() {
         const carsCollection = client.db('carsDB').collection('cars');
         const usersCollection = client.db('carsDB').collection('users');
         const bookingsCollection = client.db('carsDB').collection('bookings');
+        const paymentsCollection = client.db('carsDB').collection('payment');
 
         //data created
         app.post('/cars', async (req, res) => {
@@ -90,6 +92,13 @@ async function run() {
             const result = await carsCollection.insertOne(carData)
             res.send(result)
 
+        })
+        //payment bookings 
+        app.post("/payment-bookings", async (req, res) => {
+            const paymentData = req.body;
+            console.log(paymentData);
+            const result = await paymentsCollection.insertOne(paymentData)
+            res.send(result);
         })
 
         //users register here
@@ -169,6 +178,18 @@ async function run() {
                 error => console.log(error)
             }
 
+        })
+        // payment intend
+        app.post('/create-payment-intent', async (req, res) => {
+            const { price } = req.body
+            const amount = parseInt(price * 100)
+            if (!price || amount < 1) return
+            const { client_secret } = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: 'usd',
+                payment_method_types: ['card'],
+            })
+            res.send({ clientSecret: client_secret })
         })
 
 
