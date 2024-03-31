@@ -100,6 +100,11 @@ async function run() {
             const result = await paymentsCollection.insertOne(paymentData)
             res.send(result);
         })
+        // get all payments 
+        app.get("/payments", async (req, res) => {
+            const result = await paymentsCollection.find().toArray()
+            res.send(result)
+        })
 
         //users register here
         app.post('/users', async (req, res) => {
