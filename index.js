@@ -119,6 +119,12 @@ async function run() {
             res.send(result)
         })
 
+        //get all users
+        app.get("/users", async (req, res) => {
+            const result = await usersCollection.find().toArray()
+            res.send(result)
+        })
+
         // get cars basis on brands
 
         //http://localhost:5000/cars?brand=categoryValue
@@ -172,18 +178,18 @@ async function run() {
             }
         })
 
-        app.post('/feedback', async (req, res) => {
-            try {
-                const feedback = req.body;
-                console.log(feedback);
-                const result = await feedbackCollection.insertOne(feedback);
-                res.send(result)
-            }
-            catch {
-                error => console.log(error)
-            }
+        // app.post('/feedback', async (req, res) => {
+        //     try {
+        //         const feedback = req.body;
+        //         console.log(feedback);
+        //         const result = await feedbackCollection.insertOne(feedback);
+        //         res.send(result)
+        //     }
+        //     catch {
+        //         error => console.log(error)
+        //     }
 
-        })
+        // })
         // payment intend
         app.post('/create-payment-intent', async (req, res) => {
             const { price } = req.body
